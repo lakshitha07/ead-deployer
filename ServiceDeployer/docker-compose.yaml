@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  mysql-server:
+    image: mysql:8.0.39
+    container_name: mysql-server
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d
+
+  tracking-api-ms:
+    image: lakshithapathirage007/tracking-api-ms:005
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql-server
+    environment:
+      - DEFAULT_CONNECTION_STRING=Server=mysql-server;Port=3306;Database=performance_tracking_schema;User=root;Password=root;
+
+  prediction-api-ms:
+    image: lakshithapathirage007/prediction-api-ms:004
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql-server
+    environment:
+      - DEFAULT_CONNECTION_STRING=Server=mysql-server;Port=3306;Database=performance_tracking_schema;User=root;Password=root;
